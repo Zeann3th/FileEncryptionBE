@@ -1,10 +1,10 @@
 services:
-  auth-service:
-    build: ./auth
+  gateway-service:
+    build: ./gateway
     env_file: 
       - .env
     ports:
-      - "${AUTH_PORT}:${AUTH_PORT}"
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     depends_on:
       - database
     restart: unless-stopped
