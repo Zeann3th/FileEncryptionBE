@@ -1,3 +1,13 @@
+CREATE TABLE "files" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"name" text NOT NULL,
+	"size" text NOT NULL,
+	"encryption_method" text NOT NULL,
+	"created_at" text NOT NULL,
+	"updated_at" text NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "users" (
 	"id" text PRIMARY KEY NOT NULL,
 	"username" text NOT NULL,

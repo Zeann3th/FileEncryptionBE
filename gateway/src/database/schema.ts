@@ -20,3 +20,13 @@ export const usersView = pgView("user_views").as((qb) => qb.select({
   role: users.role,
 }).from(users));
 
+export const files = pgTable("files", {
+  id: text().$default(() => crypto.randomUUID()).primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text().notNull(),
+  size: text("size").notNull(),
+  encryptionMethod: text("encryption_method").notNull(),
+  createdAt: text("created_at").$default(() => new Date().toISOString()).notNull(),
+  updatedAt: text("updated_at").$default(() => new Date().toISOString()).notNull(),
+});
+

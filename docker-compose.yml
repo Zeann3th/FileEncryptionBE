@@ -7,6 +7,19 @@ services:
       - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     depends_on:
       - database
+      - file-service
+    restart: unless-stopped
+    networks:
+      - file_encryption_network
+
+  file-service:
+    build: ./file
+    env_file: 
+      - .env
+    ports:
+      - "${FILE_PORT}:${FILE_PORT}"
+    depends_on:
+      - database
     restart: unless-stopped
     networks:
       - file_encryption_network
