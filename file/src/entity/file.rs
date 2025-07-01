@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use sea_orm::prelude::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, DeriveEntityModel)]
@@ -27,6 +29,19 @@ pub enum EncryptionMethod {
     Aes128Gcm,
     #[sea_orm(string_value = "chacha20poly1305")]
     ChaCha20Poly1305,
+}
+
+impl FromStr for EncryptionMethod {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "aes256gcm" => Ok(EncryptionMethod::Aes256Gcm),
+            "aes128gcm" => Ok(EncryptionMethod::Aes128Gcm),
+            "chacha20poly1305" => Ok(EncryptionMethod::ChaCha20Poly1305),
+            _ => Err(()),
+        }
+    }
 }
 
 impl std::fmt::Display for EncryptionMethod {

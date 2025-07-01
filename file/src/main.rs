@@ -1,8 +1,10 @@
-mod file;
+mod entity;
 mod proto;
 mod service;
 
 use proto::file_server::FileServer;
+use service::file::FileService;
+use tonic::transport::Server;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -13,11 +15,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let db = sea_orm::Database::connect(db_conn).await.unwrap();
 
-    let file_service = service::FileService::new(db.clone());
+    let file_service = FileService::new(db.clone());
+
+    let service = tonic_reflection::server::Builder::configure()
+        .register_encoded_file_descriptor_set(proto::FILE_DESCRIPTOR_SET)
+        .build_v1()?;
 
     println!("File service listening on {}", addr);
 
-    tonic::transport::Server::builder()
+    Server::builder()
+        .add_service(service)
         .add_service(FileServer::new(file_service))
         .serve(addr)
         .await?;
