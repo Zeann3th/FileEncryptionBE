@@ -12,18 +12,17 @@ services:
       - file_encryption_network
 
   database:
-    image: mysql:9.3.0
-    container_name: mysql
+    image: postgres:17
+    container_name: postgresql
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: auth_db
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: root
+      POSTGRES_DB: crypt_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
     volumes:
-      - file_encryption_data:/var/lib/mysql
+      - file_encryption_data:/var/lib/postgresql/data
     networks:
       - file_encryption_network
 
