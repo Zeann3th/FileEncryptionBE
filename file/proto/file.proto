@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package file;
+
+service File {
+  rpc GetAllFiles(GetAllFilesRequest) returns (GetAllFilesResponse);
+  rpc GetFile(GetFileRequest) returns (GetFileResponse);
+  rpc EncryptFile(EncryptFileRequest) returns (EncryptFileResponse);
+  rpc DownloadEncryptedFile(GetFileRequest)
+      returns (DownloadEncryptedFileResponse);
+  rpc DecryptFile(DecryptFileRequest) returns (DecryptFileResponse);
+  rpc DeleteFile(DeleteFileRequest) returns (Empty);
+}
+
+message Empty {}
+
+message FileMetadata {
+  string id = 1;
+  string name = 2;
+  uint64 size = 3;
+  string encryption_method = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message FileBlob {
+  string name = 1;
+  bytes content = 2;
+}
+
+message GetAllFilesRequest { string user_id = 1; }
+
+message GetAllFilesResponse { repeated FileMetadata files = 1; }
+
+message GetFileRequest {
+  string user_id = 1;
+  string file_id = 2;
+}
+
+message GetFileResponse { FileMetadata file = 1; }
+
+message EncryptFileRequest {
+  string user_id = 1;
+  string encryption_method = 2;
+  FileBlob file = 3;
+}
+
+message EncryptFileResponse {
+  FileMetadata file = 1;
+  string encryption_key = 2;
+}
+
+message DownloadEncryptedFileResponse { FileBlob file = 1; }
+
+message DecryptFileRequest {
+  string user_id = 1;
+  string file_id = 2;
+  string encryption_key = 3;
+}
+
+message DecryptFileResponse { FileBlob file = 1; }
+
+message DeleteFileRequest {
+  string user_id = 1;
+  string file_id = 2;
+}
