@@ -1,6 +1,6 @@
-use std::str::FromStr;
-
+use crate::proto::FileMetadata;
 use sea_orm::prelude::*;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "files")]
@@ -13,6 +13,19 @@ pub struct Model {
     pub encryption_method: EncryptionMethod,
     pub created_at: String,
     pub updated_at: String,
+}
+
+impl Model {
+    pub fn to_proto(&self) -> FileMetadata {
+        FileMetadata {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            size: self.size.clone().parse().unwrap_or(0),
+            encryption_method: self.encryption_method.to_string(),
+            created_at: self.created_at.clone(),
+            updated_at: self.updated_at.clone(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, EnumIter, DeriveRelation)]

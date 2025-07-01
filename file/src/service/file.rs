@@ -31,22 +31,19 @@ impl proto::file_server::File for FileService {
         let files = FileEntity::find()
             .filter(file::Column::UserId.eq(user_id))
             .all(&self.db)
-            .await
-            .unwrap();
+            .await;
 
-        let files = files
-            .into_iter()
-            .map(|file| proto::FileMetadata {
-                id: file.id,
-                name: file.name,
-                size: file.size.parse().unwrap_or(0),
-                encryption_method: file.encryption_method.to_string(),
-                created_at: file.created_at.to_string(),
-                updated_at: file.updated_at.to_string(),
-            })
-            .collect();
+        match files {
+            Ok(files) => {
+                let files = files.into_iter().map(|file| file.to_proto()).collect();
+                Ok(tonic::Response::new(proto::GetAllFilesResponse { files }))
+            }
 
-        Ok(tonic::Response::new(proto::GetAllFilesResponse { files }))
+            Err(e) => {
+                std::eprintln!("Error fetching files: {}", e);
+                Err(tonic::Status::internal("Internal server error"))
+            }
+        }
     }
 
     async fn get_file(
@@ -65,20 +62,9 @@ impl proto::file_server::File for FileService {
             .await;
 
         match file {
-            Ok(Some(file)) => {
-                let file = proto::FileMetadata {
-                    id: file.id,
-                    name: file.name,
-                    size: file.size.parse().unwrap_or(0),
-                    encryption_method: file.encryption_method.to_string(),
-                    created_at: file.created_at.to_string(),
-                    updated_at: file.updated_at.to_string(),
-                };
-
-                Ok(tonic::Response::new(proto::GetFileResponse {
-                    file: Some(file),
-                }))
-            }
+            Ok(Some(file)) => Ok(tonic::Response::new(proto::GetFileResponse {
+                file: Some(file.to_proto()),
+            })),
 
             Ok(None) => Err(tonic::Status::not_found("File not found")),
 
